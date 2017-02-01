@@ -7,8 +7,10 @@ Summarize
 2. heapsort
 3. mergesort
 4. quicksort
-5. Radix Sort https://www.ics.uci.edu/~eppstein/161/960123.html
-6. oblivious-merge sort
+5. Bucket Sort
+6. counting sort
+7. Radix Sort https://www.ics.uci.edu/~eppstein/161/960123.html
+8. oblivious-merge sort
 
 Categorization
 -------------------
@@ -21,6 +23,12 @@ non-ob
 6
 oblivious
 others
+
+extra
+-------------------
+Is Radix Sort preferable to Comparison based sorting algorithms like Quick-Sort?
+If we have log2n bits for every digit, the running time of Radix appears to be better than Quick Sort for a wide range of input numbers.
+The constant factors hidden in asymptotic notation are higher for Radix Sort and Quick-Sort uses hardware caches more effectively. Also, Radix sort uses counting sort as a subroutine and counting sort takes extra space to sort numbers.
 """
 
 """
@@ -158,7 +166,7 @@ def swap(alist, a, b):
 
 
 """
-Merge Sort
+3. Merge Sort
 """
 
 """
@@ -202,7 +210,7 @@ print(alist)
 
 
 """
-Randomized Quicksort
+4. Randomized Quicksort
 ++++++++++++++++++++
 High-level
 ______________
@@ -266,3 +274,98 @@ def partition(alist, first, last):
 alist = [54, 26, 93, 17, 77, 31, 44, 55, 20]
 quickSort(alist)
 print(alist)
+
+"""
+5. Bucket Sort
+assuming input ditribute normally [0,1]
+1) Create n empty buckets (Or lists).
+2) Do following for every array element arr[i].
+.......a) Insert arr[i] into bucket floor([n*array[i]])
+3) Sort individual buckets using insertion sort.
+4) Concatenate all sorted buckets.
+"""
+
+
+def insertionsort(alist):
+    for i in xrange(1, len(alist)):
+        currentvalue = alist[i]
+        position = i
+        while position > 0 and currentvalue < alist[position - 1]:
+            alist[position] = alist[position - 1]
+            position -= 1
+        alist[position] = currentvalue
+
+
+def bucketsort(alist):
+    n = len(alist)
+    buckets = [[] for _ in range(n)]
+    for i in xrange(len(alist)):
+        buckets[int(n * alist[i])].append(alist[i])
+    for b in buckets:
+        insertionsort(b)
+
+    i = 0
+    for b in buckets:
+        for j in b:
+            alist[i] = j
+            i += 1
+
+"""
+6. counting sort
++++++++++++++++++++
+perfect for sorting chars
+
+Complexity
+Time -- O(k+n)
+Space -- O(n+k)
+==============
+
+"""
+
+
+def countingsort(alist):
+    k = max(alist) + 1
+    n = len(alist)
+    output = [0 for _ in xrange(n)]
+    c = [0 for _ in xrange(k)]
+    for j in alist:
+        c[j] = c[j] + 1
+    for i in xrange(1, k):
+        c[i] = c[i] + c[i - 1]
+    for i in xrange(n):
+        output[c[alist[i]] - 1] = alist[i]
+        c[alist[i]] -= 1
+    for i in xrange(n):
+        alist[i] = output[i]
+
+"""
+7. Radix Sort
+What if K = n ^ 2 for couting sort
+Use counting sort as subroutine to sort each digit
+"""
+
+
+def radix_countingsort(alist, exp):
+    n = len(alist)
+    c = [0] * 10
+    output = [0] * n
+    for j in alist:
+        v = j / exp
+        c[v % 10] += 1
+    for i in range(1, 10):
+        c[i] = c[i - 1] + c[i]
+    for i in range(n - 1, -1, -1):
+        v = alist[i] / exp
+        output[c[v % 10] - 1] = alist[i]
+        c[v % 10] -= 1
+    for i in range(n):
+        alist[i] = output[i]
+
+
+def radixsort(alist):
+    exp = 1
+    k = max(alist)
+    while k != 0:
+        radix_countingsort(alist, exp)
+        k = k / 10
+        exp = exp * 10
