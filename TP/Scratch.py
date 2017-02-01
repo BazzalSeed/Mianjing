@@ -64,34 +64,178 @@
 #     alist[a] = alist[b]
 #     alist[b] = temp
 
+#
+# def mergesort(alist):
+#     if len(alist) > 1:
+#         start, end = 0, len(alist) - 1
+#         mid = start + (start - end) / 2
+#
+#         left = alist[:mid]
+#         right = alist[mid:]
+#         mergesort(left)
+#         mergesort(right)
+#
+#         left_i, right_i, i = 0, 0, 0
+#         left_last, right_last = len(left), len(right)
+#
+#         while (left_i < left_last) and (right_i < right_last):
+#             if left[left_i] < right[right_i]:
+#                 alist[i] = left[left_i]
+#                 left_i += 1
+#             else:
+#                 alist[i] = right[right_i]
+#                 right_i += 1
+#             i += 1
+#         while left_i < left_last:
+#             alist[i] = left[left_i]
+#             left_i += 1
+#             i += 1
+#         while right_i < right_last:
+#             alist[i] = right[right_i]
+#             right_i += 1
+#             i += 1
 
-def mergesort(alist):
-    if len(alist)>1:
-        start, end = 0, len(alist) -1
-        mid = start + (start-end)/2
 
-        left = alist[:mid]
-        right = alist[mid:]
-        mergesort(left)
-        mergesort(right)
+def quickselect(alist, k):
+    start, end = 0, len(alist) - 1
+    return quickselecthelper(alist, start, end, k)
 
 
-        left_i, right_i, i = 0,0,0
-        left_last, right_last = len(left) , len(right)
+def quickselecthelper(alist, start, end, k):
+    if start <= end:
+        split = random_partition(alist, start, end)
+        print start + k, split, start, end
+        if k == split:
+            print "found"
+            return alist[start + k]
+        elif k < split:
+            return quickselecthelper(alist, start, split - 1, k)
+        else:
+            return quickselecthelper(alist, split + 1, end, k)
 
-        while  (left_i < left_last) and (right_i < right_last):
-            if left[left_i] < right[right_i]:
-                alist[i] = left[left_i]
-                left_i += 1
-            else:
-                alist[i] = right[right_i]
-                right_i += 1
-            i += 1
-        while left_i < left_last:
-            alist[i] = left[left_i]
-            left_i += 1
-            i += 1
-        while right_i < right_last:
-            alist[i] = right[right_i]
-            right_i += 1
-            i += 1
+
+def random_partition(alist, start, end):
+    from random import randint
+    pivot = randint(start, end)
+    temp = alist[start]
+    alist[start] = alist[pivot]
+    alist[pivot] = temp
+
+    leftmark = start + 1
+    rightmark = end
+    done = False
+    pivotvalue = alist[start]
+
+    while not done:
+        while leftmark <= rightmark and alist[leftmark] <= pivotvalue:
+            leftmark += 1
+        while rightmark >= leftmark and alist[rightmark] >= pivotvalue:
+            rightmark -= 1
+        if leftmark > rightmark:
+            done = True
+        else:
+            swap(alist, leftmark, rightmark)
+
+    swap(alist, start, rightmark)
+    return rightmark
+
+
+def swap(alist, a, b):
+    temp = alist[a]
+    alist[a] = alist[b]
+    alist[b] = temp
+
+
+def random_partition(alist, start, end):
+    from random import randint
+    pivot = randint(start, end)
+    swap(alist, start, pivot)
+
+    leftmark = start + 1
+    rightmark = end
+    done = False
+    pivotvalue = alist[start]
+
+    while not done:
+        while leftmark <= rightmark and alist[leftmark] <= pivotvalue:
+            leftmark += 1
+        while rightmark >= leftmark and alist[rightmark] >= pivotvalue:
+            rightmark -= 1
+        if leftmark > rightmark:
+            done = True
+        else:
+            swap(alist, leftmark, rightmark)
+
+    swap(alist, start, rightmark)
+    return rightmark
+#
+
+
+
+def partition(alist, start, end, x):
+    # find the index of the pivot
+    pivot = 0
+    for j in range(start, end):
+        if alist[j] == x:
+            pivot = j
+            break
+    swap(alist, start, pivot)
+
+    leftmark = start + 1
+    rightmark = end
+    done = False
+    pivotvalue = alist[start]
+
+    while not done:
+        while leftmark <= rightmark and alist[leftmark] <= pivotvalue:
+            leftmark += 1
+        while rightmark >= leftmark and alist[rightmark] >= pivotvalue:
+            rightmark -= 1
+        if leftmark > rightmark:
+            done = True
+        else:
+            swap(alist, leftmark, rightmark)
+
+    swap(alist, start, rightmark)
+    return rightmark
+
+
+def swap(alist, a, b):
+    temp = alist[a]
+    alist[a] = alist[b]
+    alist[b] = temp
+
+
+def select(alist, i):
+    return selecthelper(alist, 0, len(alist) - 1, i)
+# find the ith biggest element in A[p:r]
+
+
+def selecthelper(alist, start, end, i):
+
+    # divide the n elements of A into n / 5 groups
+    groups = [[]] * (((end + 1 - start) + 4) / 5)
+    for x in range(start, end + 1):
+        # print (x-start)/5, x, len(groups)
+        # print groups[(x-start)/5]
+        # print alist,len(alist),alist[x]
+        groups[(x - start) / 5] += [alist[x]]
+        # print "done"
+    # find the median of each group
+    medians = [sorted(l)[(len(l) - 1) / 2] for l in groups]
+
+    # find the median of medians
+    if len(medians) == 1:
+        median_to_rule_them_all = medians[0]
+    else:
+        median_to_rule_them_all = selecthelper(medians, 0, len(medians) - 1, (len(medians) - 1) / 2)
+
+    # partition A around the median of medians
+    partition_index = partition(alist, start, end, median_to_rule_them_all)
+
+    if i == partition_index:
+        return alist[i]
+    elif i < partition_index:
+        return selecthelper(alist, start, partition_index - 1, i)
+    else:
+        return selecthelper(alist, partition_index + 1, end, i)

@@ -231,7 +231,7 @@ def quickSort(alist):
 
 
 def quickSortHelper(alist, first, last):
-    if first < last:
+    if first <= last:
 
         splitpoint = partition(alist, first, last)
 
@@ -247,7 +247,7 @@ def quick_swap(alist, index_a, index_b):
 
 def partition(alist, first, last):
     from random import randint
-    pivot = randint(first, last)
+    pivot = randint(first, last + 1)
     quick_swap(alist, first, pivot)
 
     pivotvalue = alist[first]

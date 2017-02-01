@@ -1,66 +1,189 @@
-k largest(or smallest) elements in an array | added Min Heap method
-Question: Write an efficient program for printing k largest elements in an array. Elements in array can be in any order.
+# Find kth element
 
-For example, if given array is [1, 23, 12, 9, 30, 2, 50] and you are asked for the largest 3 elements i.e., k = 3 then your program should print 50, 30 and 23.
+## Method 1(Use Sorting)
 
+- Sort the elements in descending order in O(nLogn)
+- Print the first k numbers of the sorted array O(k).
+- Time complexity: O(nlogn)
 
-Method 1 (Use Bubble k times)
-Thanks to Shailendra for suggesting this approach.
-1) Modify Bubble Sort to run the outer loop at most k times.
-2) Print the last k elements of the array obtained in step 1.
+### Method 2 (Use Bubble k times)
 
-Time Complexity: O(nk)
+- Modify Bubble Sort to run the outer loop at most k times.
+- Print the last k elements of the array obtained in step 1.
+- Time Complexity: O(nk)
 
 Like Bubble sort, other sorting algorithms like Selection Sort can also be modified to get the k largest elements.
 
-Method 2 (Use temporary array)
-K largest elements from arr[0..n-1]
+### Method 3(Use Max Heap)
 
-1) Store the first k elements in a temporary array temp[0..k-1].
-2) Find the smallest element in temp[], let the smallest element be min.
-3) For each element x in arr[k] to arr[n-1]
-If x is greater than the min then remove min from temp[] and insert x.
-4) Print final k elements of temp[]
+- Build a Max Heap tree in O(n)
+- Use Extract Max k times to get k maximum elements from the Max Heap O(klogn)
+- Time complexity: O(n + klogn)
 
-Time Complexity: O((n-k)*k). If we want the output sorted then O((n-k)*k + klogk)
+### Method 4(Quick Select)
 
-Thanks to nesamani1822 for suggesting this method.
+In order to find the k-th order statistics in a region of size n
+* use the randomized partition to split the region into two subarrays.
+* Let s − 1 and n − s be the size of the left subarray and the size of the right subarray.
+    * If k = s, the pivot is the key that's looked for.
+    * If k ≤ s − 1, look for the k-th element in the left subarray.
+    * Otherwise, look for the (k − s)-th one in the right subarray
+* Time Complexity: Expected Time O(n)
 
-Method 3(Use Sorting)
-1) Sort the elements in descending order in O(nLogn)
-2) Print the first k numbers of the sorted array O(k).
+```
 
-Time complexity: O(nlogn)
+def quickselect(alist, k):
+    start, end = 0, len(alist) - 1
+    return quickselecthelper(alist, start, end, k)
 
-Method 4 (Use Max Heap)
-1) Build a Max Heap tree in O(n)
-2) Use Extract Max k times to get k maximum elements from the Max Heap O(klogn)
 
-Time complexity: O(n + klogn)
+def quickselecthelper(alist, start, end, k):
+    if start <= end:
+        split = random_partition(alist, start, end)
+        print start + k, split, start, end
+        if k == split:
+            print "found"
+            return alist[start + k]
+        elif k < split:
+            return quickselecthelper(alist, start, split - 1, k)
+        else:
+            return quickselecthelper(alist, split + 1, end, k)
 
-Method 5(Use Oder Statistics)
-1) Use order statistic algorithm to find the kth largest element. Please see the topic selection in worst-case linear time O(n)
-2) Use QuickSort Partition algorithm to partition around the kth largest number O(n).
-3) Sort the k-1 elements (elements greater than the kth largest element) O(kLogk). This step is needed only if sorted output is required.
 
-Time complexity: O(n) if we don’t need the sorted output, otherwise O(n+kLogk)
+def random_partition(alist, start, end):
+    from random import randint
+    pivot = randint(start, end)
+    temp = alist[start]
+    alist[start] = alist[pivot]
+    alist[pivot] = temp
 
-Thanks to Shilpi for suggesting the first two approaches.
+    leftmark = start + 1
+    rightmark = end
+    done = False
+    pivotvalue = alist[start]
 
-Method 6 (Use Min Heap)
-This method is mainly an optimization of method 1. Instead of using temp[] array, use Min Heap.
+    while not done:
+        while leftmark <= rightmark and alist[leftmark] <= pivotvalue:
+            leftmark += 1
+        while rightmark >= leftmark and alist[rightmark] >= pivotvalue:
+            rightmark -= 1
+        if leftmark > rightmark:
+            done = True
+        else:
+            swap(alist, leftmark, rightmark)
 
-Thanks to geek4u for suggesting this method.
+    swap(alist, start, rightmark)
+    return rightmark
 
-1) Build a Min Heap MH of the first k elements (arr[0] to arr[k-1]) of the given array. O(k)
 
-2) For each element, after the kth element (arr[k] to arr[n-1]), compare it with root of MH.
-……a) If the element is greater than the root then make it root and call heapify for MH
-……b) Else ignore it.
-// The step 2 is O((n-k)*logk)
+def swap(alist, a, b):
+    temp = alist[a]
+    alist[a] = alist[b]
+    alist[b] = temp
 
-3) Finally, MH has k largest elements and root of the MH is the kth largest element.
 
-Time Complexity: O(k + (n-k)Logk) without sorted output. If sorted output is needed then O(k + (n-k)Logk + kLogk)
+def random_partition(alist, start, end):
+    from random import randint
+    pivot = randint(start, end)
+    swap(alist, start, pivot)
 
-All of the above methods can also be used to find the kth largest (or smallest) element.
+    leftmark = start + 1
+    rightmark = end
+    done = False
+    pivotvalue = alist[start]
+
+    while not done:
+        while leftmark <= rightmark and alist[leftmark] <= pivotvalue:
+            leftmark += 1
+        while rightmark >= leftmark and alist[rightmark] >= pivotvalue:
+            rightmark -= 1
+        if leftmark > rightmark:
+            done = True
+        else:
+            swap(alist, leftmark, rightmark)
+
+    swap(alist, start, rightmark)
+    return rightmark
+```
+Method 5(Worst Case Linear Time)
+Select
+* Divide the input n items into n/5 [n/5] sets -- O(N)
+* find the median of each [n/5] sets -- O(N)
+* Takes these[n/5] medians and put them in another array [medians_of_medians],  use select to recursively find the median of this new array=> get median_of_median -- T(n/5)
+* partition the original array using median_of_median get split
+* then
+    * if start + split == k : return alist[start+split]
+    * elif start + split < k : recurse on right
+    * else recurse on left
+-- T(max(median_of_median_index-start, end - median_of_median_index ))
+
+```
+def partition(alist, start, end, x):
+    # find the index of the pivot
+    pivot = 0
+    for j in range(start, end):
+        if alist[j] == x:
+            pivot = j
+            break
+    swap(alist, start, pivot)
+
+    leftmark = start + 1
+    rightmark = end
+    done = False
+    pivotvalue = alist[start]
+
+    while not done:
+        while leftmark <= rightmark and alist[leftmark] <= pivotvalue:
+            leftmark += 1
+        while rightmark >= leftmark and alist[rightmark] >= pivotvalue:
+            rightmark -= 1
+        if leftmark > rightmark:
+            done = True
+        else:
+            swap(alist, leftmark, rightmark)
+
+    swap(alist, start, rightmark)
+    return rightmark
+
+
+def swap(alist, a, b):
+    temp = alist[a]
+    alist[a] = alist[b]
+    alist[b] = temp
+
+
+def select(alist, i):
+    return selecthelper(alist, 0, len(alist) - 1, i)
+# find the ith biggest element in A[p:r]
+
+
+def selecthelper(alist, start, end, i):
+
+    # divide the n elements of A into n / 5 groups
+    groups = [[]] * (((end + 1 - start) + 4) / 5)
+    for x in range(start, end + 1):
+        # print (x-start)/5, x, len(groups)
+        # print groups[(x-start)/5]
+        # print alist,len(alist),alist[x]
+        groups[(x - start) / 5] += [alist[x]]
+        # print "done"
+    # find the median of each group
+    medians = [sorted(l)[(len(l) - 1) / 2] for l in groups]
+
+    # find the median of medians
+    if len(medians) == 1:
+        median_to_rule_them_all = medians[0]
+    else:
+        median_to_rule_them_all = selecthelper(medians, 0, len(medians) - 1, (len(medians) - 1) / 2)
+
+    # partition A around the median of medians
+    partition_index = partition(alist, start, end, median_to_rule_them_all)
+
+    if i == partition_index:
+        return alist[i]
+    elif i < partition_index:
+        return selecthelper(alist, start, partition_index - 1, i)
+    else:
+        return selecthelper(alist, partition_index + 1, end, i)
+
+```
