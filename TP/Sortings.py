@@ -11,18 +11,34 @@ Summarize
 6. counting sort
 7. Radix Sort https://www.ics.uci.edu/~eppstein/161/960123.html
 8. oblivious-merge sort
+9. bitonic sort
 
 Categorization
 -------------------
 comparision
-Excpet 5
-non-comparison
-5
-
-non-ob
-6
-oblivious
+==============
 others
+non-comparison
+================
+5,6,7
+
+ob
+================
+8,9
+non - oblivious
+================
+others
+
+Stable
+=============
+0,1,3
+
+unstable
+=============
+others
+
+
+
 
 extra
 -------------------
@@ -340,8 +356,12 @@ def countingsort(alist):
 
 """
 7. Radix Sort
++++++++++++++++++
 What if K = n ^ 2 for couting sort
 Use counting sort as subroutine to sort each digit
+
+Time Complexity O(n)
+Space O(n)
 """
 
 
@@ -369,3 +389,106 @@ def radixsort(alist):
         radix_countingsort(alist, exp)
         k = k / 10
         exp = exp * 10
+
+"""
+Both oblivious sorting use divide and conquer
+"""
+"""
+8. Batcher's odd-even merge sort
+++++++++++++++++++++++++++++++++
+The idea behind Batcher’s algorithm is the following claim (which at first glance looks incredible):
+Divide
+    If you sort the first half of a list, and sort the second half separately,
+combine
+    and then sort theodd-indexed entries (first, third, fifth, ...)
+    and the even-indexed entries (second, fourth, sixth, ...)separately
+    then you need make only one more comparison-switch per pair of keys to completely sort the list.
+
+IT builds a sorting network
+O(n log2n)
+
+
+
+• Sort(x1, . . . , xn) calls:
+    Sort(x1, . . . , xn/2), then Sort(xn/2+1, . . . , xn), and then Merge(x1, . . . , xn).
+• Merge(x1, . . . , xn) calls:
+Merge(xi, for i odd), then Merge(xi for i even), and then Comp(x2, x3), Comp(x4, x5), · · ·
+Comp(xn−2, xn−1).
+• Comp(xi
+, xj ) means:
+compare the key in the position i with the one in position j and put the larger one in position
+j, the smaller one in position i.
+"""
+
+
+
+
+"""
+9. Bitonic Sorting
+++++++++++++++++
+
+• Input: Random set of 2n=2k
+(k is some positive integer)
+numbers. Note that every pair of elements is bitonic.
+• Bitonic sequences of size 2 are merged to create ordered lists of
+size 2. At the end of this first stage of merging, we actually
+have n/4 bitonic sequences of size 4.
+
+• Bitonic sequences of size 4 are merged into sorted sequences of
+size 4, alternately into increasing and decreasing order, so as to
+form n/8 bitonic sequences of size 8 and so on.
+
+• Given an unordered sequence of size 2n, exactly log2 2n stages
+of merging are required to produce a completely ordered list.
+
+• Output : Ordered list of size 2n
+
+• Θ(log2 n) levels of comparators are required to sort completely
+an initially unordered list of size 2n when done in parallel.
+"""
+def compAndSwap(a, i, j, dire):
+    if (dire == 1 and a[i] > a[j]) or (dire == 0 and a[i] < a[j]):
+        a[i], a[j] = a[j], a[i]
+
+# It recursively sorts a bitonic sequence in ascending order,
+# if dir = 1, and in descending order otherwise (means dir=0).
+# The sequence to be sorted starts at index position low,
+# the parameter cnt is the number of elements to be sorted.
+
+
+def bitonicMerge(a, low, cnt, dire):
+    if cnt > 1:
+        k = cnt / 2
+        for i in range(low, low + k):
+            compAndSwap(a, i, i + k, dire)
+        bitonicMerge(a, low, k, dire)
+        bitonicMerge(a, low + k, k, dire)
+
+# This funcion first produces a bitonic sequence by recursively
+# sorting its two halves in opposite sorting orders, and then
+# calls bitonicMerge to make them in the same order
+
+
+def bitonicSort(a, low, cnt, dire):
+    if cnt > 1:
+        k = cnt / 2
+        bitonicSort(a, low, k, 1)
+        bitonicSort(a, low + k, k, 0)
+        bitonicMerge(a, low, cnt, dire)
+
+# Caller of bitonicSort for sorting the entire array of length N
+# in ASCENDING order
+
+
+def sort(a, N, up):
+    bitonicSort(a, 0, N, up)
+
+# Driver code to test above
+a = [3, 7, 4, 8, 6, 2, 1, 5]
+n = len(a)
+up = 1
+
+sort(a, n, up)
+print ("\n\nSorted array is")
+for i in range(n):
+    print("%d" % a[i]),
