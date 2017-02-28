@@ -52,6 +52,8 @@ Dynamic -- LIST
 LinkedList
 ####PYTHON Implementation
 Deque
+
+
 ==============
 
 ###**Hash Table or Hash Map**
