@@ -414,8 +414,7 @@ O(n log2n)
 • Merge(x1, . . . , xn) calls:
 Merge(xi, for i odd), then Merge(xi for i even), and then Comp(x2, x3), Comp(x4, x5), · · ·
 Comp(xn−2, xn−1).
-• Comp(xi
-, xj ) means:
+• Comp(xi, xj ) means:
 compare the key in the position i with the one in position j and put the larger one in position
 j, the smaller one in position i.
 """
