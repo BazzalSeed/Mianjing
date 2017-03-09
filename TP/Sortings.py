@@ -263,7 +263,7 @@ def quick_swap(alist, index_a, index_b):
 
 def partition(alist, first, last):
     from random import randint
-    pivot = randint(first, last + 1)
+    pivot = randint(first, last)
     quick_swap(alist, first, pivot)
 
     pivotvalue = alist[first]
