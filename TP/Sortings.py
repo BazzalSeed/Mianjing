@@ -270,8 +270,7 @@ def partition(alist, first, last):
     leftmark = first + 1
     rightmark = last
 
-    done = False
-    while not done:
+    while leftmark <= rightmark:
 
         while leftmark <= rightmark and alist[leftmark] <= pivotvalue:
             leftmark = leftmark + 1
@@ -279,9 +278,7 @@ def partition(alist, first, last):
         while alist[rightmark] >= pivotvalue and rightmark >= leftmark:
             rightmark = rightmark - 1
 
-        if rightmark < leftmark:
-            done = True
-        else:
+        if rightmark <= leftmark:
             quick_swap(alist, leftmark, rightmark)
     quick_swap(alist, first, rightmark)
 
